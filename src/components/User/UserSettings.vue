@@ -3,12 +3,14 @@ import { User } from '@/models/User';
 import ApiService from '@/services/apiService';
 import { useStore } from '@/store';
 import { languages } from '@/utils/common';
+import { IconUserX } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
 import { Ref, computed, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
 import BlurContainer from '../BlurContainer.vue';
 import Modal from '../Modal.vue';
+import ActionIcon from '../common/ActionIcon.vue';
 
 interface inputState {
     content: string;
@@ -32,6 +34,7 @@ const hasSaved = ref(false);
 const displaySaveError = ref(false);
 const usernameAlreadyTaken = ref(false);
 const t = useI18n();
+const askDeleteConfirmation = ref(false);
 
 const validateUsername = () => {
     return !(username.content.length < 3 || username.content.length > 20);
@@ -75,6 +78,14 @@ const saveProfile = async () => {
         }
     }
 };
+
+const deleteAccount = async () => {
+    const response = await ApiService.deleteUser(user.value);
+    askDeleteConfirmation.value = false;
+    if (response) {
+        store.logout();
+    }
+};
 </script>
 
 <template>
@@ -112,6 +123,18 @@ const saveProfile = async () => {
             @close="hasSaved = false"
         />
     </BlurContainer>
+    <BlurContainer v-if="askDeleteConfirmation">
+        <Modal
+            :title="$t('deleteAccount')"
+            :message="$t('deleteAccountConfirmation')"
+            background-color="white"
+            title-color="error"
+            :confirmationDialog="true"
+            @confirm="deleteAccount"
+            @cancel="askDeleteConfirmation = false"
+        >
+        </Modal>
+    </BlurContainer>
     <div
         class="w-11/12 sm:w-5/6 xl:w-3/4 2xl:w-2/3 mx-auto p-0 sm:p-8 flex-col"
     >
@@ -119,7 +142,15 @@ const saveProfile = async () => {
             class="bg-gradient rounded-lg shadow-lg p-4 sm:p-6 mb-8 flex flex-col gap-10"
         >
             <div class="flex flex-row justify-between items-center">
-                <h1 class="text-xl sm:text-2xl">{{ $t('editProfile') }}</h1>
+                <div class="flex flex-row justify-center items-center gap-5">
+                    <h1 class="text-xl sm:text-2xl">{{ $t('editProfile') }}</h1>
+                    <ActionIcon
+                        :label="$t('deleteAccount')"
+                        :icon="IconUserX"
+                        class="hover:scale-110 focus:scale-110 hover:bg-red-400 focus:bg-red-400 transition-all"
+                        @click="askDeleteConfirmation = true"
+                    />
+                </div>
                 <RouterLink to="/profile">
                     <img
                         src="/icons/close.png"
@@ -188,7 +219,7 @@ const saveProfile = async () => {
                 </div>
                 <div class="flex justify-center items-center">
                     <input
-                        class="block h-auto p-2 text-black duration-200 border border-gray-200 rounded-md bg-gray-50 hover:bg-gray-300 cursor-pointer"
+                        class="block h-auto p-2 text-black duration-200 border border-gray-200 rounded-md bg-gray-50 hover:bg-green-400 focus:bg-green-400 cursor-pointer"
                         :disabled="areInputsSame()"
                         :value="$t('saveProfile')"
                         type="submit"

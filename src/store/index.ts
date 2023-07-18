@@ -16,7 +16,7 @@ export const useStore = defineStore('app', () => {
     const isAuthenticated = ref(!!ApiClient.token);
     const isCurrentUserLoaded = computed(() => isObject(user.value));
 
-    async function login(loginData: { username: string; password: string }) {
+    async function login(loginData: { name: string; password: string }) {
         if (!(await ApiClient.login(loginData))) {
             throw new Error('Login failed');
         }
@@ -32,7 +32,6 @@ export const useStore = defineStore('app', () => {
         }
 
         const response = await ApiClient.get<SuccessResponse<User>>('/me');
-        console.log(response);
         if (!response.success) {
             throw new Error('Failed to load current user');
         }
@@ -42,6 +41,23 @@ export const useStore = defineStore('app', () => {
     }
 
     async function logout() {
+        user.value = null;
+        isAuthenticated.value = false;
+        ApiClient.logout();
+
+        router.push({ name: 'Home' });
+    }
+
+    async function deleteAccount() {
+        if (!isAuthenticated.value || !isCurrentUserLoaded.value) {
+            return;
+        }
+
+        const response = await ApiClient.delete('/me');
+        if (!response.success) {
+            throw new Error('Failed to delete current user');
+        }
+
         user.value = null;
         isAuthenticated.value = false;
         ApiClient.logout();

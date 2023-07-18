@@ -101,7 +101,7 @@ class ApiClient {
     }
 
     public async login(loginData: {
-        username: string;
+        name: string;
         password: string;
     }): Promise<boolean> {
         const response = await this.post<{

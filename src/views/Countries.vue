@@ -35,7 +35,7 @@ const filteredCountries = () => {
                 country.name
                     .toLowerCase()
                     .includes(search.value.toLowerCase()) &&
-                country.region.includes(currentRegion)
+                country.region.continent.name.includes(currentRegion)
             );
         });
     } else {
@@ -103,13 +103,10 @@ onBeforeMount(async () => {
         <div
             class="w-full md:w-3/4 2xl:w-7/12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-16 p-10"
         >
-            <div
-                v-for="country in filteredCountries()"
-                :key="country.alpha3Code"
-            >
+            <div v-for="country in filteredCountries()" :key="country.id">
                 <CountryLink
                     :countryName="country.name"
-                    :countryCode="country.alpha3Code"
+                    :countryCode="country.code"
                     :countryFlag="country.flag"
                 />
             </div>

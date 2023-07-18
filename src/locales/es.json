@@ -122,5 +122,9 @@
     "more": "Más",
     "less": "Menos",
     "reset": "Restablecer",
-    "value": "Valor"
+    "value": "Valor",
+    "today": "Hoy",
+    "now": "Ahora",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteAccountConfirmation": "¿Estás seguro de que quieres eliminar tu cuenta?"
 }

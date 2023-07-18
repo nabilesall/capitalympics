@@ -13,8 +13,10 @@ import {
     IconSortDescending,
     IconX
 } from '@tabler/icons-vue';
+import { DateTime } from 'luxon';
 import { storeToRefs } from 'pinia';
 import { Ref, computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { RouterLink } from 'vue-router';
 import Badge from '../Badge.vue';
 import BlurContainer from '../BlurContainer.vue';
@@ -24,7 +26,6 @@ import ScoresDisplay from './ScoresDisplay.vue';
 
 const store = useStore();
 const user = storeToRefs(store).user as Ref<User>;
-
 defineEmits(['close']);
 
 const confirmingLogOut = ref(false);
@@ -47,6 +48,7 @@ const capitalScore = computed(() => getLevelName(user.value.capital_score));
 const currentScore = computed(() =>
     learningType.value === 'flag' ? flagScore.value : capitalScore.value
 );
+const { t } = useI18n();
 
 const increaseMax = () => {
     if (isMax.value) {
@@ -110,48 +112,22 @@ async function loadScores() {
     lastRegion.value = region.value;
 }
 
-const isDateNow = (date: Date) => {
-    const now = new Date();
-    // 10 minutes max
-    return now.getTime() - date.getTime() < 600000;
+const isToday = (date: DateTime): boolean => {
+    return date.toISODate() === DateTime.local().toISODate();
 };
 
-const isDateToday = (date: Date) => {
-    const now = new Date();
-    return (
-        now.getDate() === date.getDate() &&
-        now.getMonth() === date.getMonth() &&
-        now.getFullYear() === date.getFullYear()
-    );
+const isNow = (date: DateTime): boolean => {
+    return date.diffNow().as('minutes') < 10;
 };
 
-const formatDate = (date: Date) => {
-    let minutes = date.getMinutes();
-    if (minutes < 10) {
-        minutes = parseInt(`0${minutes}`);
+const formatDate = (date: DateTime) => {
+    if (isToday(date)) {
+        return t('today');
     }
-    if (isDateNow(date)) {
-        switch (user.value.language) {
-            case 'fr':
-                return 'Maintenant';
-            case 'en':
-                return 'Now';
-            case 'es':
-                return 'Ahora';
-            default:
-                return 'Now';
-        }
-    } else if (isDateToday(date)) {
-        switch (user.value.language) {
-            case 'fr':
-                return "Aujourd'hui";
-            case 'en':
-                return 'Today';
-            case 'es':
-                return 'Hoy';
-        }
+    if (isNow(date)) {
+        return t('now');
     }
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} `;
+    return date.toLocaleString(DateTime.DATE_MED);
 };
 
 const switchLearningType = () => {
@@ -210,7 +186,7 @@ const scoreValues: number[] = [-1, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
                             class="w-10 h-10 sm:w-10 sm:h-10 rounded-full mr-4"
                         />
                         <h1 class="text-2xl mr-1 font-bold">
-                            {{ user?.name }}
+                            {{ user.name }}
                         </h1>
                     </div>
                     <div
@@ -235,11 +211,11 @@ const scoreValues: number[] = [-1, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
                 <p class="text-black mb-2">
                     {{ $t('lastActivity') }} :
-                    {{ formatDate(new Date(user.last_activity)) }}
+                    {{ formatDate(DateTime.fromISO(user.updated_at)) }}
                 </p>
                 <p class="text-black">
                     {{ $t('joined') }} :
-                    {{ formatDate(new Date(user.created_at)) }}
+                    {{ formatDate(DateTime.fromISO(user.created_at)) }}
                 </p>
             </div>
             <div

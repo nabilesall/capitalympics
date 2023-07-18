@@ -49,7 +49,7 @@ async function getNewCountry(region: Region) {
 async function handleClick(score: ScoreType) {
     if (!country.value) return;
     const response = await ApiClient.put<any>(
-        `/users/${user.value.id}/${country.value.alpha3Code}/${currentLearning}/score/${score}`
+        `/users/${user.value.id}/${country.value.code}/${currentLearning}/score/${score}`
     );
 
     if (response.success) {

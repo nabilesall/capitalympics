@@ -116,11 +116,15 @@
     "discoverCountries": "Découvrez tous les pays !",
     "ready?": "Prêt ?",
     "loginToStart": "Connectez-vous pour commencer à vous entrainez !",
-    "joinUs": "Rejoignez nous dès maintenant !",
+    "joinUs": "Rejoignez-nous dès maintenant !",
     "switch": "Changer de mode",
     "sort": "Trier les scores",
     "more": "Plus",
     "less": "Moins",
     "reset": "Réinitialiser",
-    "value": "Valeur"
+    "value": "Valeur",
+    "today": "Aujourd'hui",
+    "now": "Maintenant",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteAccountConfirmation": "Êtes-vous sûr de vouloir supprimer votre compte ?"
 }

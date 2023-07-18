@@ -28,7 +28,7 @@ async function login() {
     isLoading.value = true;
     try {
         await store.login({
-            username: username.value,
+            name: username.value,
             password: password.value
         });
         router.push({ name: 'Profile' });

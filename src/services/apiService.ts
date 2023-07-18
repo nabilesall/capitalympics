@@ -17,7 +17,6 @@ export default class ApiService {
         if (!response.success) {
             throw new Error('An error occurred while retrieving countries');
         }
-
         return response.data.countries;
     }
 
@@ -34,6 +33,8 @@ export default class ApiService {
                 `An error occurred while retrieving the country with the code '${code}'`
             );
         }
+
+        console.log(response.data.country);
 
         return response.data.country;
     }
@@ -81,6 +82,12 @@ export default class ApiService {
 
     public static async updateUser(user: User): Promise<boolean> {
         const response = await ApiClient.put(`/users/${user.id}`, { user });
+
+        return response.success;
+    }
+
+    public static async deleteUser(user: User): Promise<boolean> {
+        const response = await ApiClient.delete(`/users/${user.id}`);
 
         return response.success;
     }
