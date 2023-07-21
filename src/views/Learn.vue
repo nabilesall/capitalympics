@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import BlurContainer from '@/components/BlurContainer.vue';
-import Loader from '@/components/Loader.vue';
 import Modal from '@/components/Modal.vue';
 import { User } from '@/models/User';
 import ApiService from '@/services/apiService';
@@ -12,7 +11,6 @@ import { RouterLink } from 'vue-router';
 const store = useStore();
 const user = storeToRefs(store).user as Ref<User>;
 
-const initFirstTimeScores = ref(false);
 const confirmingResetScores = ref(false);
 
 const resetScoresConfirmation = () => {
@@ -20,15 +18,12 @@ const resetScoresConfirmation = () => {
 };
 
 const resetScores = async (): Promise<boolean> => {
-    initFirstTimeScores.value = true;
     confirmingResetScores.value = false;
 
     try {
-        return await ApiService.resetScores(user.value.id);
+        return await ApiService.resetScores();
     } catch (error) {
         console.log(error);
-    } finally {
-        initFirstTimeScores.value = false;
     }
 
     return false;
@@ -40,10 +35,7 @@ const resetScores = async (): Promise<boolean> => {
         v-if="user !== null"
         class="flex flex-col justify-center items-center gap-20 my-5 h-full"
     >
-        <BlurContainer
-            v-if="confirmingResetScores && initFirstTimeScores"
-            class="w-1/2"
-        >
+        <BlurContainer v-if="confirmingResetScores" class="w-1/2">
             <Modal
                 v-if="confirmingResetScores"
                 :title="$t('resetScoresConfirmation')"
@@ -54,7 +46,6 @@ const resetScores = async (): Promise<boolean> => {
                 @confirm="resetScores"
                 @cancel="confirmingResetScores = false"
             />
-            <Loader v-else-if="initFirstTimeScores" :title="$t('loading')" />
         </BlurContainer>
 
         <div
@@ -134,12 +125,6 @@ const resetScores = async (): Promise<boolean> => {
                     {{ $t('seeScores') }}
                 </RouterLink>
             </div>
-        </div>
-        <div
-            class="transition ease-in-out delay-100 text-black text-2xl font-bold text-center p-5 bg-white rounded-md hover:scale-105 w-1/2 cursor-pointer"
-            @click="resetScores"
-        >
-            {{ $t('initScoresTitle') }}
         </div>
     </div>
 </template>

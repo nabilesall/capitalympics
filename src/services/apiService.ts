@@ -34,8 +34,6 @@ export default class ApiService {
             );
         }
 
-        console.log(response.data.country);
-
         return response.data.country;
     }
 
@@ -92,12 +90,9 @@ export default class ApiService {
         return response.success;
     }
 
-    public static async resetScores(user_id: number): Promise<boolean> {
-        const response = await ApiClient.post(`/users/init/${user_id}`, null);
-        if (!response.success) {
-            throw new Error('Failed reset scores');
-        }
+    public static async resetScores(): Promise<boolean> {
+        const response = await ApiClient.delete(`/questions`);
 
-        return true;
+        return response.success;
     }
 }

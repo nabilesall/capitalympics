@@ -32,9 +32,13 @@ const currentRegion = ref<Region>('World');
 
 async function getNewCountry(region: Region) {
     isLoading.value = true;
-    const queryParameters = { lang: user.value.language, region };
+    const queryParameters = {
+        lang: user.value.language,
+        region,
+        type: currentLearning
+    };
     const response = await ApiClient.get<{ country: CountryI }>(
-        `/users/${user.value.id}/country/play/${currentLearning}`,
+        '/users/play',
         queryParameters
     );
     isLoading.value = false;
@@ -48,9 +52,12 @@ async function getNewCountry(region: Region) {
 
 async function handleClick(score: ScoreType) {
     if (!country.value) return;
-    const response = await ApiClient.put<any>(
-        `/users/${user.value.id}/${country.value.code}/${currentLearning}/score/${score}`
-    );
+    const body = {
+        result: score,
+        type: currentLearning,
+        country_id: country.value.id
+    };
+    const response = await ApiClient.post<any>(`/questions`, body);
 
     if (response.success) {
         currentState.value = 'starting';
